@@ -1,16 +1,17 @@
-style-token
+StyleToken sublime plugin
 ===========
 
-StyleToken sublime plugin
+A sublime plugin that allows to highlight certain pieces of text with different colors (similar to notepad++ "Style token" functionality)
 
-Provides ability to highlight certain pieces of text with different colors (similar to notepad++ "Style token" functionality)
+Usage
+------------
 
-Adds "Style token" context menu and few commands:
- - token_style, args: styleIndex : Highlight selected text with style = styleIndex
- - token_style_clear, args: styleIndex: Clear hightlights of style = styleIndex
- - token_style_go, args: styleIndex: Go to the next highlighted text
+Plugin adds "Style token" context menu and few commands:
+ - token_style, args: styleIndex : Highlight selected text with style = styleIndex.
+ - token_style_clear, args: styleIndex: Clear hightlights of style = styleIndex. If no arg provided, clears all styles.
+ - token_style_go, args: styleIndex: Go to the next highlighted text. If styleIndex arg provided, go to the specific style. If no arg provided, go to the any next style.
 
-See "Default (Windows).sublime-keymap" for example of usage. 
+See "Default (Windows).sublime-keymap" for example of command usage. 
 
 By default, has only windows keymap
 
