@@ -66,8 +66,8 @@ def move_selection(view, region):
     view.show(region)
 
 def rollover(style_index):
-    if style_index > len(styles) - 1:
-                style_index = style_index - len(styles)
+    if style_index > MAX_STYLES - 1:
+                style_index = style_index - MAX_STYLES
     return style_index
 
 def get_style(style_ind):
