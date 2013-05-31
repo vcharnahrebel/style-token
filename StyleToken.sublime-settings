@@ -1,5 +1,7 @@
 {
 "styletoken_style1" : "string",
 "styletoken_style2" : "invalid",
-"styletoken_style3" : "variable"
+"styletoken_style3" : "variable",
+"styletoken_style4" : "comment",
+"styletoken_style5" : "variable.parameter"
 }

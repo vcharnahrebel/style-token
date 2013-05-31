@@ -1,12 +1,12 @@
 [
-	{ "caption": "-" },
-	{
-		"caption": "Style Token",
-		"children": [
+    { "caption": "-" },
+    {
+        "caption": "Style Token",
+        "children": [
         {
-			"caption": "Style 1",
-			"command": "token_style", "args" : {"style_index" : 0}
-		},
+            "caption": "Style 1",
+            "command": "token_style", "args" : {"style_index" : 0}
+        },
         {
             "caption": "Style 2",
             "command": "token_style", "args" : {"style_index" : 1}
@@ -14,6 +14,14 @@
         {
             "caption": "Style 3",
             "command": "token_style", "args" : {"style_index" : 2}
+        },
+        {
+            "caption": "Style 4",
+            "command": "token_style", "args" : {"style_index" : 3}
+        },
+        {
+            "caption": "Style 5",
+            "command": "token_style", "args" : {"style_index" : 4}
         },
         {
             "caption": "Clear All",
@@ -24,8 +32,12 @@
             "command": "token_style_go"
         },
         {
+            "caption": "Jump to prev token",
+            "command": "token_style_go_back"
+        },
+        {
             "caption": "-"
         }
        ]
-	}
+    }
 ]

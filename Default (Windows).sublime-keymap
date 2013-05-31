@@ -3,12 +3,14 @@
 { "keys": ["super+w", "1"], "command": "token_style", "args" : {"style_index" : 0 } },
 { "keys": ["super+w", "2"], "command": "token_style", "args" : {"style_index" : 1 } },
 { "keys": ["super+w", "3"], "command": "token_style", "args" : {"style_index" : 2 } },
-
+{ "keys": ["super+w", "4"], "command": "token_style", "args" : {"style_index" : 3 } },
+{ "keys": ["super+w", "5"], "command": "token_style", "args" : {"style_index" : 4 } },
 
 { "keys": ["super+w", "7"], "command": "token_style_go", "args" : {"style_index" : 1 } },
 { "keys": ["super+w", "8"], "command": "token_style_clear", "args" : {"style_index" : 1 } },
 
 { "keys": ["super+w", "w"], "command": "token_style_clear" },
-{ "keys": ["super+\\"], "command": "token_style_go" }
+{ "keys": ["super+\\"], "command": "token_style_go" },
+{ "keys": ["super+shift+\\"], "command": "token_style_go_back" }
 
 ]
