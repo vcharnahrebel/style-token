@@ -57,7 +57,7 @@ def color_selection(view, style_ind):
     if currentSelection.size() > 0:
         currentRegions = view.get_regions(REGION_NAME + str(style_ind))
         currentRegions.extend(view.find_all(view.substr(currentSelection), sublime.LITERAL))
-        view.add_regions(REGION_NAME + str(style_ind), currentRegions, get_style(style_ind), sublime.DRAW_EMPTY)
+        view.add_regions(REGION_NAME + str(style_ind), currentRegions, get_style(style_ind), "dot", sublime.DRAW_EMPTY)
 
 def move_selection(view, region):
     #print 'move_selection ' + str(region.begin())
