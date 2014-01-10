@@ -2,7 +2,7 @@ import sublime, sublime_plugin
 
 REGION_NAME = 'StyleTokenListener'
 MAX_STYLES = 10
-cs_settings = sublime.load_settings('StyleToken.sublime-settings')
+cs_settings = None
 
 class TokenStyleCommand(sublime_plugin.TextCommand):
     def run(self, edit, style_index):
@@ -42,6 +42,10 @@ class StyleTokenListener(sublime_plugin.EventListener):
     def on_load(self, view):
         return
 
+def plugin_loaded():
+    global cs_settings
+    cs_settings = sublime.load_settings('StyleToken.sublime-settings')
+
 def get_current_regions(view, style_index):
     currentRegions = []
     if style_index < 0:
@@ -57,7 +61,7 @@ def color_selection(view, style_ind):
     if currentSelection.size() > 0:
         currentRegions = view.get_regions(REGION_NAME + str(style_ind))
         currentRegions.extend(view.find_all(view.substr(currentSelection), sublime.LITERAL))
-        view.add_regions(REGION_NAME + str(style_ind), currentRegions, get_style(style_ind), "dot", sublime.DRAW_EMPTY)
+        view.add_regions(REGION_NAME + str(style_ind), currentRegions, str(get_style(style_ind)), "dot", sublime.DRAW_EMPTY)
 
 def move_selection(view, region):
     #print 'move_selection ' + str(region.begin())
@@ -72,3 +76,6 @@ def rollover(style_index):
 
 def get_style(style_ind):
     return cs_settings.get('styletoken_style'+ str(style_ind+1), 'invalid')
+
+if not int(sublime.version()) > 3000:
+    plugin_loaded()
