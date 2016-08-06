@@ -11,23 +11,33 @@ class TokenStyleCommand(sublime_plugin.TextCommand):
 
 class TokenStyleGoCommand(sublime_plugin.TextCommand):
     def run(self, edit, style_index=-1):
-        currentRegions = get_current_regions(self.view, style_index)
-        pos = self.view.sel()[0].end()
-        for region in currentRegions:
-            if region.begin() > pos:
-                move_selection(self.view, region)
-                return
-        move_selection(self.view, currentRegions[0])
+        view = self.view
+        current_regions = get_current_regions(view, style_index)
+        if current_regions:
+            selections = view.sel()
+            if selections:
+                pos = selections[0].end()
+                for region in current_regions:
+                    if region.begin() > pos:
+                        move_selection(view, region)
+                        return
+
+            move_selection(view, current_regions[0])
 
 class TokenStyleGoBackCommand(sublime_plugin.TextCommand):
     def run(self, edit, style_index=-1):
-        currentRegions = get_current_regions(self.view, style_index)
-        pos = self.view.sel()[0].end()
-        for region in reversed(currentRegions):
-            if region.end() < pos:
-                move_selection(self.view, region)
-                return
-        move_selection(self.view, currentRegions[-1])
+        view = self.view
+        current_regions = get_current_regions(view, style_index)
+        if current_regions:
+            selections = view.sel()
+            if selections:
+                pos = selections[0].end()
+                for region in reversed(current_regions):
+                    if region.begin() < pos:
+                        move_selection(view, region)
+                        return
+
+            move_selection(view, current_regions[-1])
 
 class TokenStyleClearCommand(sublime_plugin.TextCommand):
     def run(self, edit, style_index=-1):
@@ -50,14 +60,13 @@ def plugin_loaded():
     cs_settings = sublime.load_settings('StyleToken.sublime-settings')
 
 def get_current_regions(view, style_index):
-    currentRegions = []
     if style_index < 0:
+        currentRegions = []
         for style in range(MAX_STYLES):
-            currentRegions = currentRegions + view.get_regions(REGION_NAME % style)
-        currentRegions = sorted(currentRegions, key=lambda region: region.begin())
+            currentRegions += view.get_regions(REGION_NAME % style)
+        return sorted(currentRegions, key=lambda region: region.begin())
     else:
-        currentRegions = currentRegions + view.get_regions(REGION_NAME % rollover(style_index))
-    return currentRegions
+        return view.get_regions(REGION_NAME % rollover(style_index))
 
 def color_selection(view, style_ind):
     current_regions = view.get_regions(REGION_NAME % style_ind)
