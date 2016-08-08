@@ -1,6 +1,7 @@
 import sublime, sublime_plugin
+import re
 
-REGION_NAME = 'StyleTokenListener'
+REGION_NAME = 'StyleTokenListener%d'
 MAX_STYLES = 10
 cs_settings = None
 
@@ -10,29 +11,41 @@ class TokenStyleCommand(sublime_plugin.TextCommand):
 
 class TokenStyleGoCommand(sublime_plugin.TextCommand):
     def run(self, edit, style_index=-1):
-        currentRegions = get_current_regions(self.view, style_index)
-        pos = self.view.sel()[0].end()
-        for region in currentRegions:
-            if region.begin() > pos:
-                move_selection(self.view, region)
-                return
-        move_selection(self.view, currentRegions[0])
+        view = self.view
+        current_regions = get_current_regions(view, style_index)
+        if current_regions:
+            selections = view.sel()
+            if selections:
+                pos = selections[0].end()
+                for region in current_regions:
+                    if region.begin() > pos:
+                        move_selection(view, region)
+                        return
+
+            move_selection(view, current_regions[0])
 
 class TokenStyleGoBackCommand(sublime_plugin.TextCommand):
     def run(self, edit, style_index=-1):
-        currentRegions = get_current_regions(self.view, style_index)
-        pos = self.view.sel()[0].end()
-        for region in reversed(currentRegions):
-            if region.end() < pos:
-                move_selection(self.view, region)
-                return
-        move_selection(self.view, currentRegions[-1])
+        view = self.view
+        current_regions = get_current_regions(view, style_index)
+        if current_regions:
+            selections = view.sel()
+            if selections:
+                pos = selections[0].end()
+                for region in reversed(current_regions):
+                    if region.begin() < pos:
+                        move_selection(view, region)
+                        return
+
+            move_selection(view, current_regions[-1])
 
 class TokenStyleClearCommand(sublime_plugin.TextCommand):
     def run(self, edit, style_index=-1):
         if style_index < 0:
-            for style in range(MAX_STYLES): self.view.erase_regions(REGION_NAME + str(style))
-        else: self.view.erase_regions(REGION_NAME + str(rollover(style_index)))
+            for style in range(MAX_STYLES):
+                self.view.erase_regions(REGION_NAME % style)
+        else:
+            self.view.erase_regions(REGION_NAME % rollover(style_index))
 
 class StyleTokenListener(sublime_plugin.EventListener):
     def on_modified(self, view):
@@ -47,35 +60,47 @@ def plugin_loaded():
     cs_settings = sublime.load_settings('StyleToken.sublime-settings')
 
 def get_current_regions(view, style_index):
-    currentRegions = []
     if style_index < 0:
+        currentRegions = []
         for style in range(MAX_STYLES):
-            currentRegions = currentRegions + view.get_regions(REGION_NAME + str(style))
-        currentRegions = sorted(currentRegions, key=lambda region: region.begin())
+            currentRegions += view.get_regions(REGION_NAME % style)
+        return sorted(currentRegions, key=lambda region: region.begin())
     else:
-        currentRegions = currentRegions + view.get_regions(REGION_NAME + str(rollover(style_index)))
-    return currentRegions
+        return view.get_regions(REGION_NAME % rollover(style_index))
 
 def color_selection(view, style_ind):
-    currentSelection = view.sel()[0]
-    if currentSelection.size() > 0:
-        currentRegions = view.get_regions(REGION_NAME + str(style_ind))
-        currentRegions.extend(view.find_all(view.substr(currentSelection), sublime.LITERAL))
-        view.add_regions(REGION_NAME + str(style_ind), currentRegions, str(get_style(style_ind)), "dot", sublime.DRAW_EMPTY)
+    current_regions = view.get_regions(REGION_NAME % style_ind)
+    tokens = set()
+    for region in view.sel():
+        whole_word_only = region.empty()
+        if whole_word_only:
+            region = view.word(region)
+            if region.empty():
+                continue
+        literal = view.substr(region)
+        escaped = re.escape(literal)
+        if whole_word_only and escaped[0].isalnum():
+            escaped = r'\b%s\b' % escaped
+        tokens.add(escaped)
+
+    if tokens:
+        if len(tokens) == 1 and not whole_word_only:
+            current_regions.extend(view.find_all(literal, sublime.LITERAL))
+        else:
+            current_regions.extend(view.find_all('|'.join(tokens)))
+        view.add_regions(REGION_NAME % style_ind, current_regions, str(get_style(style_ind)), 'dot')
 
 def move_selection(view, region):
-    #print 'move_selection ' + str(region.begin())
+    # print('move_selection %d' % region.begin())
     view.sel().clear()
     view.sel().add(sublime.Region(region.begin(), region.begin()))
     view.show(region)
 
 def rollover(style_index):
-    if style_index > MAX_STYLES - 1:
-                style_index = style_index - MAX_STYLES
-    return style_index
+    return style_index % MAX_STYLES
 
 def get_style(style_ind):
-    return cs_settings.get('styletoken_style'+ str(style_ind+1), 'invalid')
+    return cs_settings.get('styletoken_style%d' % (style_ind+1), 'invalid')
 
 if not int(sublime.version()) > 3000:
     plugin_loaded()
